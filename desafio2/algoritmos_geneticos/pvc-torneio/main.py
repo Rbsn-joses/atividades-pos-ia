@@ -8,19 +8,19 @@ import random
 import numpy as np
 
 # Importar as funções dos módulos
-from ga_logic import create_initial_population, calculate_fitness, calculate_total_distance, order_crossover, swap_mutation
+from ga_logic import create_initial_population, calculate_fitness, calculate_total_distance, order_crossover, swap_mutation,select_parent_by_tournament,reverse_mutation
 from visualization import setup_pygame_display, draw_all_elements, update_performance_plots_at_end
 
 # --- Parâmetros ---
 WIDTH, HEIGHT = 1200, 1000
-N_CITIES = 70
+N_CITIES = 80
 POPULATION_SIZE = 1000
 N_GENERATIONS = 800
 MUTATION_PROBABILITY = 0.1
 CROSSOVER_PROBABILITY = 0.95
-CONVERGENCE_GENERATIONS = 100
+CONVERGENCE_GENERATIONS = 200
 TSP_DISPLAY_OFFSET = 60
-TOURNAMENT_SIZE = 5 
+TOURNAMENT_SIZE = 10
 def run_simulation():
     # Inicialização
     screen, clock = setup_pygame_display(WIDTH, HEIGHT)
@@ -79,16 +79,15 @@ def run_simulation():
         # Próxima Geração
         next_population = [list(best_individual)]
         while len(next_population) < POPULATION_SIZE:
-            parent1 = random.choice(sorted_population[:POPULATION_SIZE//2])
-            parent2 = random.choice(sorted_population[:POPULATION_SIZE//2])
-            
+            parent1 = select_parent_by_tournament(population, population_fitness, TOURNAMENT_SIZE)
+            parent2 = select_parent_by_tournament(population, population_fitness, TOURNAMENT_SIZE)
             if random.random() < CROSSOVER_PROBABILITY:
                 child = order_crossover(list(parent1), list(parent2))
             else:
                 child = list(random.choice([list(parent1), list(parent2)]))
             
-            child = swap_mutation(tuple(child), MUTATION_PROBABILITY)
-            
+            #child = swap_mutation(tuple(child), MUTATION_PROBABILITY)
+            child = reverse_mutation(tuple(child), MUTATION_PROBABILITY)
             if list(child) not in next_population:
                 next_population.append(list(child))
         

@@ -75,6 +75,37 @@ def select_parent_by_tournament(population, population_fitness, k):
     # Retorna o indivíduo (rota) vencedor
     return population[winner_index]
 
-# ...
-# O resto do seu código run_simulation
-# ...
+def reverse_mutation(individual: tuple, mutation_probability: float) -> tuple:
+    """
+    Aplica a Mutação por Inversão (Reverse Mutation) na rota.
+
+    Seleciona um segmento aleatório da rota e inverte a ordem das cidades dentro dele.
+    
+    Args:
+        individual (tuple): A rota (cromossomo) a ser mutada.
+        mutation_probability (float): A chance de a mutação ocorrer.
+
+    Returns:
+        tuple: O novo indivíduo (rota mutada ou original).
+    """
+    if random.random() < mutation_probability:
+        # 1. Converte para lista para poder modificar
+        mutated_list = list(individual)
+        n = len(mutated_list)
+        
+        # 2. Seleciona dois pontos de corte aleatórios
+        # Garante que start_index < end_index
+        start_index = random.randint(0, n - 1)
+        end_index = random.randint(start_index, n - 1)
+        
+        # 3. Extrai e inverte o segmento
+        segment = mutated_list[start_index : end_index + 1]
+        segment.reverse()
+        
+        # 4. Substitui o segmento original pelo segmento invertido
+        mutated_list[start_index : end_index + 1] = segment
+        
+        return tuple(mutated_list)
+    
+    return individual
+
